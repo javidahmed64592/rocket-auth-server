@@ -1,22 +1,16 @@
 import { Alert, Snackbar } from "@mui/material";
+import type { NotificationType } from "@/types/types";
 
-interface Props {
-  open: boolean;
-  message: string;
-  severity: "success" | "error";
-  onClose: () => void;
-}
-
-export default function PopupNotification({ open, message, severity, onClose }: Props) {
+export default function PopupNotification({ notification, onClose }: { notification: NotificationType; onClose: () => void }) {
   return (
     <Snackbar
-      open={open}
+      open={notification.open}
       autoHideDuration={4000}
       onClose={onClose}
       anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
     >
-      <Alert onClose={onClose} severity={severity} variant="filled" sx={{ width: "100%" }}>
-        {message}
+      <Alert onClose={onClose} severity={notification.severity} variant="filled" sx={{ width: "100%" }}>
+        {notification.message}
       </Alert>
     </Snackbar>
   );

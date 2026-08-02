@@ -1,21 +1,16 @@
 import { Box } from "@mui/material";
 import { type SubmitEvent, useState } from "react";
+import type { NotificationType } from "@/types/types";
 
 import { login } from "@/lib/api";
 import LoginForm from "@/components/LoginForm";
 import PopupNotification from "@/components/PopupNotification";
 
-type Notification = {
-  open: boolean;
-  message: string;
-  severity: "success" | "error";
-};
-
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [notification, setNotification] = useState<Notification>({
+  const [notification, setNotification] = useState<NotificationType>({
     open: false,
     message: "",
     severity: "success",
@@ -58,9 +53,7 @@ export default function Login() {
         handleSubmit={handleSubmit}
       />
       <PopupNotification
-        open={notification.open}
-        message={notification.message}
-        severity={notification.severity}
+        notification={notification}
         onClose={closeNotification}
       />
     </Box>
