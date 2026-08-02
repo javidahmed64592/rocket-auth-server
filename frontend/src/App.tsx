@@ -1,10 +1,8 @@
-import "./App.css";
-
 import { ThemeProvider } from "@mui/material/styles";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import theme from "@/lib/theme";
-import Login from "./pages/Login";
+import Login from "@/pages/Login";
 
 export default function App() {
   return (
