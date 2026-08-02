@@ -1,18 +1,6 @@
 :root {
-  --dash-bg: #1a1a1a;
-  --dash-surface: #282a28;
-  --dash-border: #1d1e1d;
-  --dash-text: #d7efd5;
-  --dash-primary: #00a80e;
-  --dash-primary-hover: #57BB53;
-  --dash-danger: #ff0040;
-  --dash-radius: 10px;
-  --dash-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-
   font: 18px/145% system-ui, "Segoe UI", Roboto, sans-serif;
   color-scheme: dark;
-  color: var(--dash-text);
-  background: var(--dash-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

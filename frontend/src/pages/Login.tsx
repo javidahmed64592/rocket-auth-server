@@ -1,25 +1,38 @@
+import { Box } from "@mui/material";
 import { type SubmitEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { login } from "@/lib/api";
+import LoginForm from "@/components/LoginForm";
+import PopupNotification from "@/components/PopupNotification";
+
+type Notification = {
+  open: boolean;
+  message: string;
+  severity: "success" | "error";
+};
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const navigate = useNavigate();
+  const [notification, setNotification] = useState<Notification>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+  function closeNotification() {
+    setNotification((n) => ({ ...n, open: false }));
+  }
 
   async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
     setSubmitting(true);
     try {
       const ok = await login(username, password);
       if (ok) {
-        navigate("/home");
+        setNotification({ open: true, message: "Login successful!", severity: "success" });
       } else {
-        setError("Invalid username or password");
+        setNotification({ open: true, message: "Invalid username or password!", severity: "error" });
       }
     } finally {
       setSubmitting(false);
@@ -27,37 +40,29 @@ export default function Login() {
   }
 
   return (
-    <div className="login-page">
-      <form className="login-card dashboard-card" onSubmit={handleSubmit}>
-        <h1 className="login-title">Rocket Auth Server</h1>
-        {error && <p className="login-error">{error}</p>}
-        <label className="login-field">
-          <span>Username</span>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            autoFocus
-          />
-        </label>
-        <label className="login-field">
-          <span>Password</span>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </label>
-        <button
-          type="submit"
-          className="dashboard-btn login-submit"
-          disabled={submitting}
-        >
-          {submitting ? "Logging in…" : "Log in"}
-        </button>
-      </form>
-    </div>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "background.default",
+      }}
+    >
+      <LoginForm
+        username={username}
+        setUsername={setUsername}
+        password={password}
+        setPassword={setPassword}
+        submitting={submitting}
+        handleSubmit={handleSubmit}
+      />
+      <PopupNotification
+        open={notification.open}
+        message={notification.message}
+        severity={notification.severity}
+        onClose={closeNotification}
+      />
+    </Box>
   );
 }
