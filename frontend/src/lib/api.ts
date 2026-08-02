@@ -17,9 +17,3 @@ export async function logout(): Promise<void> {
     credentials: "include",
   });
 }
-
-export async function fetchProtected(): Promise<{ message: string }> {
-  const res = await fetch("/api/protected", { credentials: "include" });
-  if (!res.ok) throw new Error("unauthorized");
-  return res.json();
-}
