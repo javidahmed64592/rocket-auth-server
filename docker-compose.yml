@@ -13,6 +13,7 @@ services:
       - rocket-auth
     networks:
       - authnet
+    restart: unless-stopped
 
   rocket-auth:
     build:
@@ -29,6 +30,18 @@ services:
       - "${ROCKET_PORT}"
     networks:
       - authnet
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "sh",
+          "-c",
+          "curl -f http://localhost:${ROCKET_PORT}/api/health || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
 
 networks:
   authnet:
