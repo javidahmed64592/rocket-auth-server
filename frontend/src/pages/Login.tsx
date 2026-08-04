@@ -1,10 +1,21 @@
 import { Box } from "@mui/material";
 import { type SubmitEvent, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import type { NotificationType } from "@/types/types";
 
 import { login } from "@/lib/api";
 import LoginForm from "@/components/LoginForm";
 import PopupNotification from "@/components/PopupNotification";
+
+function isSafeRedirect(url: string | null): url is string {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url, window.location.origin);
+    return parsed.hostname.endsWith(".home");
+  } catch {
+    return false;
+  }
+}
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -15,6 +26,8 @@ export default function Login() {
     message: "",
     severity: "success",
   });
+  const [searchParams] = useSearchParams();
+
   function closeNotification() {
     setNotification((n) => ({ ...n, open: false }));
   }
@@ -25,9 +38,19 @@ export default function Login() {
     try {
       const ok = await login(username, password);
       if (ok) {
-        setNotification({ open: true, message: "Login successful!", severity: "success" });
+        setNotification({
+          open: true,
+          message: "Login successful!",
+          severity: "success",
+        });
+        const redirect = searchParams.get("redirect");
+        window.location.href = isSafeRedirect(redirect) ? redirect! : "/";
       } else {
-        setNotification({ open: true, message: "Invalid username or password!", severity: "error" });
+        setNotification({
+          open: true,
+          message: "Invalid username or password!",
+          severity: "error",
+        });
       }
     } finally {
       setSubmitting(false);
