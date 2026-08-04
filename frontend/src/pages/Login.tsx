@@ -11,7 +11,7 @@ function isSafeRedirect(url: string | null): url is string {
   if (!url) return false;
   try {
     const parsed = new URL(url, window.location.origin);
-    return parsed.hostname.endsWith(".home");
+    return parsed.hostname.endsWith(".lab.home.arpa");
   } catch {
     return false;
   }

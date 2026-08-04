@@ -51,7 +51,7 @@ async fn login(
     match Argon2::default().verify_password(creds.password.as_bytes(), &parsed_hash) {
         Ok(()) => {
             let mut cookie = Cookie::new("session", username);
-            cookie.set_domain(".home");
+            cookie.set_domain(".lab.home.arpa");
             cookie.set_path("/");
             cookie.set_same_site(SameSite::Lax);
             cookies.add_private(cookie);
@@ -64,7 +64,7 @@ async fn login(
 #[post("/logout")]
 fn logout(cookies: &CookieJar<'_>) -> Status {
     let mut cookie = Cookie::new("session", "");
-    cookie.set_domain(".home");
+    cookie.set_domain(".lab.home.arpa");
     cookie.set_path("/");
     cookies.remove_private(cookie);
     Status::Ok
