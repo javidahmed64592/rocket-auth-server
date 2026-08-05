@@ -4,6 +4,7 @@ extern crate rocket;
 mod auth;
 mod db;
 
+use auth::CookieDomain;
 use db::{UsersDb, ensure_users_db_exists};
 use rocket::fs::{FileServer, NamedFile};
 use rocket_auth_server::static_dir;
@@ -22,9 +23,12 @@ async fn spa_fallback() -> Option<NamedFile> {
 #[launch]
 fn rocket() -> _ {
     dotenvy::dotenv().ok();
+    let cookie_domain =
+        CookieDomain(std::env::var("AUTH_COOKIE_DOMAIN").expect("AUTH_COOKIE_DOMAIN must be set"));
     ensure_users_db_exists();
 
     rocket::build()
+        .manage(cookie_domain)
         .attach(UsersDb::init())
         .mount("/api", routes![health])
         .mount("/api", auth::routes())

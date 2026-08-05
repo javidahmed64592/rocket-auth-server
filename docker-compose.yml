@@ -4,10 +4,18 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      AUTH_HOSTNAME: ${AUTH_HOSTNAME}
+      TESTAPP_HOSTNAME: ${TESTAPP_HOSTNAME}
+    entrypoint:
+      - /bin/sh
+      - -c
+      - "mkdir -p /etc/nginx/snippets && envsubst '$$AUTH_HOSTNAME' < /etc/nginx/snippets/auth.conf.template > /etc/nginx/snippets/auth.conf && exec /docker-entrypoint.sh nginx -g 'daemon off;'"
     volumes:
       - ./certs:/etc/nginx/certs:ro
-      - ./nginx/sites-available:/etc/nginx/conf.d:ro
-      - ./nginx/snippets:/etc/nginx/snippets:ro
+      - ./nginx/snippets/ssl.conf:/etc/nginx/snippets/ssl.conf:ro
+      - ./nginx/snippets/auth.conf.template:/etc/nginx/snippets/auth.conf.template:ro
+      - ./nginx/templates:/etc/nginx/templates:ro
       - ./var/www/testapp:/var/www/testapp:ro
     depends_on:
       - rocket-auth
@@ -19,11 +27,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_AUTH_COOKIE_DOMAIN: ${VITE_AUTH_COOKIE_DOMAIN}
     environment:
       ROCKET_ADDRESS: ${ROCKET_ADDRESS}
       ROCKET_PORT: ${ROCKET_PORT}
       ROCKET_SECRET_KEY: ${ROCKET_SECRET_KEY}
       ROCKET_DATABASES: ${ROCKET_DATABASES}
+      AUTH_COOKIE_DOMAIN: ${AUTH_COOKIE_DOMAIN}
     volumes:
       - ./db:/app/db
     expose:
