@@ -1,11 +1,11 @@
 import { Box } from "@mui/material";
 import { type SubmitEvent, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { NotificationType } from "@/types/types";
 
-import { login } from "@/lib/api";
 import LoginForm from "@/components/LoginForm";
 import PopupNotification from "@/components/PopupNotification";
+import { login } from "@/lib/api";
+import type { NotificationType } from "@/types/types";
 
 function isSafeRedirect(url: string | null): url is string {
   if (!url) return false;

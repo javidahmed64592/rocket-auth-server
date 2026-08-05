@@ -22,9 +22,18 @@ export default function LoginForm({
       component="form"
       onSubmit={handleSubmit}
       elevation={3}
-      sx={{ width: 320, display: "flex", flexDirection: "column", gap: 2, p: 3 }}
+      sx={{
+        width: 320,
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        p: 3,
+      }}
     >
-      <Typography variant="h5" sx={{ fontWeight: 600, textAlign: "center", mb: 1 }}>
+      <Typography
+        variant="h5"
+        sx={{ fontWeight: 600, textAlign: "center", mb: 1 }}
+      >
         Rocket Authentication
       </Typography>
       <TextField
