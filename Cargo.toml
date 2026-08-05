@@ -1,10 +1,10 @@
 [package]
-name = "rust-base-server"
+name = "rocket-auth-server"
 version = "0.1.0"
-description = "A Rocket server in Rust."
+description = "A local Rocket authentication server."
 edition = "2024"
-repository = "https://github.com/javidahmed64592/rust-base-server"
-homepage = "https://github.com/javidahmed64592/rust-base-server"
+repository = "https://github.com/javidahmed64592/rocket-auth-server"
+homepage = "https://github.com/javidahmed64592/rocket-auth-server"
 license = "MIT"
 authors = ["Javid Ahmed <javidahmed@icloud.com>"]
 
@@ -20,6 +20,7 @@ path = "src/bin/create_user.rs"
 
 [dependencies]
 argon2 = "0.5.3"
+dotenvy = "0.15.7"
 rocket = { version = "0.5.1", features = ["json", "secrets"] }
 rocket_db_pools = { version = "0.2.0", features = ["sqlx_sqlite"] }
 rpassword = "7.5.4"
