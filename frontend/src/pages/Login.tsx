@@ -7,11 +7,16 @@ import PopupNotification from "@/components/PopupNotification";
 import { login } from "@/lib/api";
 import type { NotificationType } from "@/types/types";
 
+const AUTH_COOKIE_DOMAIN = import.meta.env.VITE_AUTH_COOKIE_DOMAIN;
+if (!AUTH_COOKIE_DOMAIN) {
+  throw new Error("VITE_AUTH_COOKIE_DOMAIN must be set at build time");
+}
+
 function isSafeRedirect(url: string | null): url is string {
   if (!url) return false;
   try {
     const parsed = new URL(url, window.location.origin);
-    return parsed.hostname.endsWith(".lab.home.arpa");
+    return parsed.hostname.endsWith(AUTH_COOKIE_DOMAIN);
   } catch {
     return false;
   }

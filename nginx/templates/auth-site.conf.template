@@ -1,12 +1,12 @@
 server {
     listen 80;
-    server_name auth.lab.home.arpa;
+    server_name ${AUTH_HOSTNAME};
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl;
-    server_name auth.lab.home.arpa;
+    server_name ${AUTH_HOSTNAME};
     include /etc/nginx/snippets/ssl.conf;
 
     location / {

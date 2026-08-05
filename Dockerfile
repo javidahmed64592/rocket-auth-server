@@ -3,6 +3,9 @@ FROM node:24-alpine AS frontend-builder
 
 WORKDIR /frontend
 
+ARG VITE_AUTH_COOKIE_DOMAIN
+ENV VITE_AUTH_COOKIE_DOMAIN=${VITE_AUTH_COOKIE_DOMAIN}
+
 COPY frontend/package*.json ./
 RUN npm ci
 
@@ -31,9 +34,7 @@ COPY --from=backend-builder /app/target/release/rocket-auth-server ./
 COPY --from=backend-builder /app/target/release/create-user ./
 COPY --from=backend-builder /app/static ./static
 
-ENV ROCKET_ADDRESS=0.0.0.0
-ENV ROCKET_PORT=8000
-EXPOSE 8000
+EXPOSE ${ROCKET_PORT}
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/api/health || exit 1

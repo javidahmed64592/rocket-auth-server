@@ -20,8 +20,7 @@
 
           await new Promise((r) => setTimeout(r, 100));
 
-          window.location.href =
-            "https://auth.lab.home.arpa/login?redirect=https://testapp.lab.home.arpa/";
+          window.location.replace("/");
         } catch (error) {
           console.error("Logout failed", error);
         }

@@ -1,12 +1,12 @@
 server {
     listen 80;
-    server_name testapp.lab.home.arpa;
+    server_name ${TESTAPP_HOSTNAME};
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl;
-    server_name testapp.lab.home.arpa;
+    server_name ${TESTAPP_HOSTNAME};
     include /etc/nginx/snippets/ssl.conf;
     include /etc/nginx/snippets/auth.conf;
 
@@ -16,6 +16,7 @@ server {
 
         auth_request_set $auth_user $upstream_http_x_user;
         add_header X-User $auth_user always;
+        add_header Cache-Control "no-store" always;
 
         root /var/www/testapp;
         index index.html;

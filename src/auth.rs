@@ -4,11 +4,13 @@ use rocket::Request;
 use rocket::http::{Cookie, CookieJar, SameSite, Status};
 use rocket::response::{self, Responder, Response};
 use rocket::serde::json::Json;
-use rocket::{Route, get, post, routes};
+use rocket::{Route, State, get, post, routes};
 use rocket_auth_server::Credentials;
 use rocket_db_pools::{Connection, sqlx};
 
 use crate::db::UsersDb;
+
+pub struct CookieDomain(pub String);
 
 struct VerifyResponse {
     status: Status,
@@ -30,6 +32,7 @@ async fn login(
     creds: Json<Credentials>,
     mut db: Connection<UsersDb>,
     cookies: &CookieJar<'_>,
+    cookie_domain: &State<CookieDomain>,
 ) -> Status {
     let row: Option<(String, String)> =
         sqlx::query_as("SELECT username, password_hash FROM users WHERE username = ?")
@@ -51,7 +54,7 @@ async fn login(
     match Argon2::default().verify_password(creds.password.as_bytes(), &parsed_hash) {
         Ok(()) => {
             let mut cookie = Cookie::new("session", username);
-            cookie.set_domain(".lab.home.arpa");
+            cookie.set_domain(cookie_domain.0.clone());
             cookie.set_path("/");
             cookie.set_same_site(SameSite::Lax);
             cookies.add_private(cookie);
@@ -62,9 +65,9 @@ async fn login(
 }
 
 #[post("/logout")]
-fn logout(cookies: &CookieJar<'_>) -> Status {
+fn logout(cookies: &CookieJar<'_>, cookie_domain: &State<CookieDomain>) -> Status {
     let mut cookie = Cookie::new("session", "");
-    cookie.set_domain(".lab.home.arpa");
+    cookie.set_domain(cookie_domain.0.clone());
     cookie.set_path("/");
     cookies.remove_private(cookie);
     Status::Ok

@@ -14,5 +14,5 @@ location = /api/logout {
 
 location = /internal/login-redirect {
     internal;
-    return 302 https://auth.lab.home.arpa/login?redirect=$scheme://$http_host$request_uri;
+    return 302 https://${AUTH_HOSTNAME}/login?redirect=$scheme://$http_host$request_uri;
 }
