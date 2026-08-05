@@ -6,8 +6,8 @@ mod db;
 
 use db::{UsersDb, ensure_users_db_exists};
 use rocket::fs::{FileServer, NamedFile};
-use rocket_db_pools::{Database};
-use rocket_auth_server::{static_dir};
+use rocket_auth_server::static_dir;
+use rocket_db_pools::Database;
 
 #[get("/health")]
 fn health() -> &'static str {
