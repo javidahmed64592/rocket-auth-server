@@ -1,0 +1,6 @@
+.github
+frontend/node_modules
+static
+target
+wix
+.env.example
