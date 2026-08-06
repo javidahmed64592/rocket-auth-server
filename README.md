@@ -43,8 +43,6 @@ The following variables must be set:
 | `ROCKET_DATABASES` | SQLite connection string pointing at the users database. |
 | `AUTH_COOKIE_DOMAIN` | Domain scope for the session cookie (e.g. `.lab.home.arpa`). Must be a shared suffix of all protected hostnames. |
 | `VITE_AUTH_COOKIE_DOMAIN` | Same value as above — baked into the frontend bundle at image build time to validate safe redirect URLs. |
-| `AUTH_HOSTNAME` | Hostname of the auth server itself (e.g. `auth.lab.home.arpa`). Used in the nginx login-redirect URL. |
-| `TESTAPP_HOSTNAME` | Hostname of the example protected app (e.g. `testapp.lab.home.arpa`). |
 
 Generate a secret key for Rocket's private cookie encryption and paste it into `ROCKET_SECRET_KEY`:
 
@@ -104,14 +102,14 @@ All hostnames must resolve on every device that needs to reach the services, not
 docker compose up -d
 ```
 
-Navigate to `https://testapp.lab.home.arpa` in your browser (substituting your `TESTAPP_HOSTNAME`).
+Navigate to `https://testapp${AUTH_COOKIE_DOMAIN}` in your browser.
 Your browser should trust the certificate because it was signed by the mkcert local CA.
-You will be redirected to `https://auth.lab.home.arpa/login` (your `AUTH_HOSTNAME`) to log in.
+You will be redirected to `https://auth${AUTH_COOKIE_DOMAIN}/login` to log in.
 After successful authentication, you will be redirected back to the original site.
 
 ### Adding a new protected site
 
-1. Create `nginx/templates/<appname>-site.conf.template`. Use `<appname>${AUTH_COOKIE_DOMAIN}` for `server_name` — only the app-name prefix is hardcoded; the domain is injected at container startup from the shared `AUTH_COOKIE_DOMAIN` env var. These site-specific templates are not committed to the repository; copy them onto the host as needed.
+1. Create `nginx/templates/<appname>-site.conf.template`. Use `<appname>${AUTH_COOKIE_DOMAIN}` for `server_name` — only the app-name prefix is hardcoded; the domain is injected at container startup from the shared `AUTH_COOKIE_DOMAIN` env var.
 2. If the upstream runs on the **host machine** (outside Docker), use `proxy_pass http://host.docker.internal:<port>;` — `host.docker.internal` is mapped to the host via `extra_hosts` in `docker-compose.yml`.
 3. Include `include /etc/nginx/snippets/auth.conf;` and `add_header Cache-Control "no-store" always;` in the protected location block.
 4. Ensure the hostname shares the same root domain as `AUTH_COOKIE_DOMAIN` so the session cookie is sent.

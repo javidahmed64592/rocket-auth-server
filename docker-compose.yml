@@ -7,13 +7,11 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      AUTH_HOSTNAME: ${AUTH_HOSTNAME}
-      TESTAPP_HOSTNAME: ${TESTAPP_HOSTNAME}
       AUTH_COOKIE_DOMAIN: ${AUTH_COOKIE_DOMAIN}
     entrypoint:
       - /bin/sh
       - -c
-      - "mkdir -p /etc/nginx/snippets && envsubst '$$AUTH_HOSTNAME' < /etc/nginx/snippets/auth.conf.template > /etc/nginx/snippets/auth.conf && exec /docker-entrypoint.sh nginx -g 'daemon off;'"
+      - "mkdir -p /etc/nginx/snippets && envsubst 'auth$$AUTH_COOKIE_DOMAIN' < /etc/nginx/snippets/auth.conf.template > /etc/nginx/snippets/auth.conf && exec /docker-entrypoint.sh nginx -g 'daemon off;'"
     volumes:
       - ./certs:/etc/nginx/certs:ro
       - ./nginx/snippets/ssl.conf:/etc/nginx/snippets/ssl.conf:ro
