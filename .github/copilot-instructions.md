@@ -31,17 +31,18 @@ Browser
 - **The `db/` directory** is bind-mounted into the container. The SQLite file is opened read-only by the server (`?mode=ro`); `create-user` opens it with `?mode=rwc`.
 - **TLS certificates** are generated with `mkcert` as a wildcard (e.g. `*.lab.home.arpa`) and named `certs/rocket-auth.crt` / `certs/rocket-auth.key` to match `nginx/snippets/ssl.conf`.
 - **Static assets** are embedded in the Docker image at build time from `frontend/`. Do not serve them from a bind mount in production.
-- **All hostnames and domains are configured via `.env`** — no hardcoded values remain in source. Copy `.env.example` to `.env` to get started.
+- **Built-in service hostnames are configured via `.env`** (copy `.env.example` to get started). Site-specific proxy templates hardcode their `server_name` and upstream directly — no new env vars needed.
 - **Protected nginx locations must set `Cache-Control: no-store`** so browsers always re-request through `auth_request` rather than serving stale cached content.
 
 ## Adding a New Protected Site
 
-1. Create `nginx/templates/<newhostname>-site.conf.template` following the pattern in `testapp-site.conf.template`. Include `include /etc/nginx/snippets/auth.conf;` and `add_header Cache-Control "no-store" always;` in the protected location.
-2. Add a hostname env var to `.env` and to the nginx `environment` section in `docker-compose.yml`.
-3. Ensure the new hostname shares the same root domain as `AUTH_COOKIE_DOMAIN`.
-4. The wildcard TLS certificate covers any subdomain — no regeneration needed.
-5. Add a DNS record pointing the new hostname to the host machine's IP.
-6. Restart nginx: `docker compose up -d --force-recreate nginx`.
+1. Create `nginx/templates/<appname>-site.conf.template`. Use `<appname>${AUTH_COOKIE_DOMAIN}` for `server_name` — only the app-name prefix is hardcoded; the domain is injected at container startup from the shared `AUTH_COOKIE_DOMAIN` env var. These site-specific templates are not committed to the repository; copy them onto the host as needed.
+2. If the upstream runs on the **host machine** (outside Docker), use `proxy_pass http://host.docker.internal:<port>;` — `host.docker.internal` is mapped to the host via `extra_hosts` in `docker-compose.yml`.
+3. Include `include /etc/nginx/snippets/auth.conf;` and `add_header Cache-Control "no-store" always;` in the protected location block.
+4. Ensure the hostname shares the same root domain as `AUTH_COOKIE_DOMAIN` so the session cookie is sent.
+5. The wildcard TLS certificate covers any subdomain — no regeneration needed.
+6. Add a DNS record pointing the new hostname to the host machine's IP.
+7. Restart nginx: `docker compose up -d --force-recreate nginx`.
 
 ## Technology Stack
 
