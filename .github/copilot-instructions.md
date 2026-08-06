@@ -9,8 +9,8 @@ Rocket Auth Server is a self-hosted authentication server built with Rust and th
 ```
 Browser
   └── nginx (TLS termination, auth_request gating)
-        ├── $AUTH_HOSTNAME      →  rocket-auth (Rocket/Rust)
-        └── $TESTAPP_HOSTNAME   →  /var/www/testapp (static files, gated)
+        ├── auth${AUTH_COOKIE_DOMAIN}      →  rocket-auth (Rocket/Rust)
+        └── testapp${AUTH_COOKIE_DOMAIN}   →  /var/www/testapp (static files, gated)
 ```
 
 - **`src/main.rs`** – Rocket entry point; reads `AUTH_COOKIE_DOMAIN` from env at startup (panics if unset) and attaches it as managed state; mounts `/api` routes and a static file server with SPA fallback.
