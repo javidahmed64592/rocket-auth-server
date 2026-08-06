@@ -111,16 +111,13 @@ After successful authentication, you will be redirected back to the original sit
 
 ### Adding a new protected site
 
-1. Add `<NEWHOSTNAME>_HOSTNAME` (or reuse an existing variable) to your `.env` and reference it in a new `nginx/templates/<newhostname>-site.conf.template`, following the pattern in `testapp-site.conf.template`.
-2. Include `include /etc/nginx/snippets/auth.conf;` in the server block to enable cookie-based auth gating.
-3. Ensure the new hostname shares the same root domain as `AUTH_COOKIE_DOMAIN`.
-4. The wildcard TLS certificate already covers any subdomain — no regeneration needed.
-5. Add a DNS record for the new hostname pointing to the host machine's IP.
-6. Add the new hostname env var to the nginx `environment` section in `docker-compose.yml`.
-7. Restart the stack to apply the new config:
-   ```bash
-   docker compose up -d --force-recreate nginx
-   ```
+1. Create `nginx/templates/<appname>-site.conf.template`. Use `<appname>${AUTH_COOKIE_DOMAIN}` for `server_name` — only the app-name prefix is hardcoded; the domain is injected at container startup from the shared `AUTH_COOKIE_DOMAIN` env var. These site-specific templates are not committed to the repository; copy them onto the host as needed.
+2. If the upstream runs on the **host machine** (outside Docker), use `proxy_pass http://host.docker.internal:<port>;` — `host.docker.internal` is mapped to the host via `extra_hosts` in `docker-compose.yml`.
+3. Include `include /etc/nginx/snippets/auth.conf;` and `add_header Cache-Control "no-store" always;` in the protected location block.
+4. Ensure the hostname shares the same root domain as `AUTH_COOKIE_DOMAIN` so the session cookie is sent.
+5. The wildcard TLS certificate covers any subdomain — no regeneration needed.
+6. Add a DNS record pointing the new hostname to the host machine's IP.
+7. Restart nginx: `docker compose up -d --force-recreate nginx`.
 
 ## License
 
