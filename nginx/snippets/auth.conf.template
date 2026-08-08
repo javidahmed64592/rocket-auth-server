@@ -16,3 +16,8 @@ location = /internal/login-redirect {
     internal;
     return 302 https://auth${AUTH_COOKIE_DOMAIN}/login?redirect=$scheme://$http_host$request_uri;
 }
+
+location = /error.html {
+    internal;
+    return 302 https://auth${AUTH_COOKIE_DOMAIN}/error;
+}
