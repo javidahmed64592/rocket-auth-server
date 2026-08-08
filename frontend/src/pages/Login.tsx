@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
-import { type SubmitEvent, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { type SubmitEvent, useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import LoginForm from "@/components/LoginForm";
 import PopupNotification from "@/components/PopupNotification";
@@ -12,17 +12,30 @@ if (!AUTH_COOKIE_DOMAIN) {
   throw new Error("VITE_AUTH_COOKIE_DOMAIN must be set at build time");
 }
 
-function isSafeRedirect(url: string | null): url is string {
-  if (!url) return false;
-  try {
-    const parsed = new URL(url, window.location.origin);
-    return parsed.hostname.endsWith(AUTH_COOKIE_DOMAIN);
-  } catch {
-    return false;
-  }
-}
-
 export default function Login() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get("redirect");
+
+  function isSafeRedirect(url: string | null) {
+    if (!url) {
+      return false;
+    }
+
+    try {
+      const parsed = new URL(url!, window.location.origin);
+      return parsed.hostname.endsWith(AUTH_COOKIE_DOMAIN);
+    } catch {
+      return false;
+    }
+  }
+
+  useEffect(() => {
+    if (!isSafeRedirect(redirect)) {
+      navigate("/error");
+    }
+  }, [redirect, navigate]);
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -31,7 +44,6 @@ export default function Login() {
     message: "",
     severity: "success",
   });
-  const [searchParams] = useSearchParams();
 
   function closeNotification() {
     setNotification((n) => ({ ...n, open: false }));
@@ -48,8 +60,7 @@ export default function Login() {
           message: "Login successful!",
           severity: "success",
         });
-        const redirect = searchParams.get("redirect");
-        window.location.href = isSafeRedirect(redirect) ? redirect! : "/";
+        window.location.href = redirect!;
       } else {
         setNotification({
           open: true,
@@ -63,27 +74,29 @@ export default function Login() {
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        bgcolor: "background.default",
-      }}
-    >
-      <LoginForm
-        username={username}
-        setUsername={setUsername}
-        password={password}
-        setPassword={setPassword}
-        submitting={submitting}
-        handleSubmit={handleSubmit}
-      />
-      <PopupNotification
-        notification={notification}
-        onClose={closeNotification}
-      />
-    </Box>
+    isSafeRedirect(redirect) && (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          bgcolor: "background.default",
+        }}
+      >
+        <LoginForm
+          username={username}
+          setUsername={setUsername}
+          password={password}
+          setPassword={setPassword}
+          submitting={submitting}
+          handleSubmit={handleSubmit}
+        />
+        <PopupNotification
+          notification={notification}
+          onClose={closeNotification}
+        />
+      </Box>
+    )
   );
 }

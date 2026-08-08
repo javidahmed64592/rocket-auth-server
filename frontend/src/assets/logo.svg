@@ -1,0 +1,24 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>Rocket Authentication logo</title>
+  <desc>A padlock with a rocket-shaped keyhole and a flame beneath it, in the app's dark green theme</desc>
+  <defs>
+    <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#57BB53" />
+      <stop offset="100%" stop-color="#00a80e" />
+    </linearGradient>
+  </defs>
+
+  <rect x="8" y="8" width="112" height="112" rx="26" fill="#1a1a1a" stroke="#2b2c2b" stroke-width="2" />
+
+  <path d="M46 54 A18 18 0 0 1 82 54" fill="none" stroke="#57BB53" stroke-width="9" stroke-linecap="round" />
+
+  <rect x="34" y="50" width="60" height="50" rx="10" fill="url(#bodyGrad)" />
+
+  <polygon points="64,58 58,72 70,72" fill="#1a1a1a" />
+  <rect x="58" y="72" width="12" height="14" fill="#1a1a1a" />
+  <polygon points="58,80 50,90 58,90" fill="#1a1a1a" />
+  <polygon points="70,80 78,90 70,90" fill="#1a1a1a" />
+  <circle cx="64" cy="66" r="3" fill="#00a80e" />
+
+  <polygon points="64,109 58,98 70,98" fill="#ff0040" />
+</svg>

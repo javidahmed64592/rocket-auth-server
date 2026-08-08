@@ -38,7 +38,7 @@ Browser
 
 1. Create `nginx/templates/<appname>-site.conf.template`. Use `<appname>${AUTH_COOKIE_DOMAIN}` for `server_name` — only the app-name prefix is hardcoded; the domain is injected at container startup from the shared `AUTH_COOKIE_DOMAIN` env var. These site-specific templates are not committed to the repository; copy them onto the host as needed.
 2. If the upstream runs on the **host machine** (outside Docker), use `proxy_pass http://host.docker.internal:<port>;` — `host.docker.internal` is mapped to the host via `extra_hosts` in `docker-compose.yml`.
-3. Include `include /etc/nginx/snippets/auth.conf;` and `add_header Cache-Control "no-store" always;` in the protected location block.
+3. Include `include /etc/nginx/snippets/auth.conf;` for authentication, `error_page 401 = /internal/login-redirect;` to redirect unauthenticated users to login, `error_page 404 /error.html;` to redirect 404s to the auth error page, `add_header Cache-Control "no-store" always;` to prevent caching, and `proxy_intercept_errors on;` to let nginx handle backend errors.
 4. Ensure the hostname shares the same root domain as `AUTH_COOKIE_DOMAIN` so the session cookie is sent.
 5. The wildcard TLS certificate covers any subdomain — no regeneration needed.
 6. Add a DNS record pointing the new hostname to the host machine's IP.

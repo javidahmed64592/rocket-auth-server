@@ -10,7 +10,7 @@ server {
     include /etc/nginx/snippets/ssl.conf;
 
     location / {
-        proxy_pass http://rocket-auth:8000;
+        proxy_pass http://rocket-auth:${ROCKET_PORT};
         proxy_set_header Host $host;
         proxy_set_header Cookie $http_cookie;
         proxy_set_header X-Forwarded-Proto $scheme;

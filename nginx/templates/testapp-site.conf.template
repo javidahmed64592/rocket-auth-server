@@ -13,6 +13,7 @@ server {
     location / {
         auth_request /internal/auth-verify;
         error_page 401 = /internal/login-redirect;
+        error_page 404 /error.html;
 
         auth_request_set $auth_user $upstream_http_x_user;
         add_header X-User $auth_user always;

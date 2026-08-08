@@ -1,6 +1,6 @@
 location = /internal/auth-verify {
     internal;
-    proxy_pass http://rocket-auth:8000/api/verify;
+    proxy_pass http://rocket-auth:${ROCKET_PORT}/api/verify;
     proxy_pass_request_body off;
     proxy_set_header Content-Length "";
     proxy_set_header X-Original-URI $request_uri;
@@ -8,11 +8,16 @@ location = /internal/auth-verify {
 }
 
 location = /api/logout {
-    proxy_pass http://rocket-auth:8000/api/logout;
+    proxy_pass http://rocket-auth:${ROCKET_PORT}/api/logout;
     proxy_set_header Cookie $http_cookie;
 }
 
 location = /internal/login-redirect {
     internal;
     return 302 https://auth${AUTH_COOKIE_DOMAIN}/login?redirect=$scheme://$http_host$request_uri;
+}
+
+location = /error.html {
+    internal;
+    return 302 https://auth${AUTH_COOKIE_DOMAIN}/error;
 }
