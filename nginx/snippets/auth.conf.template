@@ -1,6 +1,9 @@
+resolver 127.0.0.11 valid=30s;
+
 location = /internal/auth-verify {
     internal;
-    proxy_pass http://rocket-auth:${ROCKET_PORT}/api/verify;
+    set $upstream_rocket rocket-auth:${ROCKET_PORT};
+    proxy_pass http://$upstream_rocket/api/verify;
     proxy_pass_request_body off;
     proxy_set_header Content-Length "";
     proxy_set_header X-Original-URI $request_uri;
@@ -8,7 +11,8 @@ location = /internal/auth-verify {
 }
 
 location = /api/logout {
-    proxy_pass http://rocket-auth:${ROCKET_PORT}/api/logout;
+    set $upstream_rocket rocket-auth:${ROCKET_PORT};
+    proxy_pass http://$upstream_rocket/api/logout;
     proxy_set_header Cookie $http_cookie;
 }
 
